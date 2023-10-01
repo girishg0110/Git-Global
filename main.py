@@ -13,8 +13,8 @@ GOOGLE_TRANSLATE_ENDPOINT = "https://translation.googleapis.com/language/transla
 # Map between Google API language codes and language names
 language_labels = dict(
     zip(
-        ["zh", "hi", "fr", "ar", "es"],
-        ["中国人", "हिंदी", "Français", "عربي", "Español"]
+        ["fr", "hi", "zh", "ar", "es"],
+        ["Français", "हिंदी", "中国人", "عربي", "Español"]
     )
 )
 
@@ -46,8 +46,7 @@ def show_readmes():
 
 # Handles translate button logic to update session state READMEs and then calls show_readmes
 def show_translated_readmes():
-    st.title(f"{language_labels[st.session_state['target_language']]} READMEs")
-
+    st.title("Git Global 🌎")
     translated_readmes = []
     for i in st.session_state["visible_repos"]:
         summary = st.session_state["repos"][i]
@@ -72,6 +71,7 @@ def show_translated_readmes():
 
 def show_finetuned_repos():
     show_keyword_form()
+    st.title("Git Global 🌎")
 
     keyword = st.session_state["keyword"]
     translated_keyword = get_translation(
@@ -90,14 +90,17 @@ def show_finetuned_repos():
 
 def show_searched_repos():
     show_keyword_form()
+    st.title("Git Global 🌎")
     
     username = st.session_state["username"]
     user_type = st.session_state["user_type"]
+    repo_limit = st.session_state["repo_limit"]
 
     with st.spinner(f"Fetching READMEs from user {username}..."):
         repo_summaries = GithubClient.get_user_repo_summaries(
             username=username, 
-            user_type=user_type
+            user_type=user_type,
+            link_limit=int(repo_limit) if repo_limit else float("inf")
         )
     n_repos = len(repo_summaries)
     st.session_state["repos"] = repo_summaries
@@ -116,6 +119,10 @@ def show_search_form():
             options=("user", "org"),
             format_func=lambda opt: "Individual User" if opt == "user" else "Organization",
             key="user_type"
+        )
+        st.text_input(
+            "Repository limit",
+            key="repo_limit",
         )
         st.form_submit_button(
             label = "Search",
@@ -145,6 +152,8 @@ def show_keyword_form():
             label = "Finetune", 
             on_click = show_finetuned_repos,
         )
-        
 
-show_search_form()
+if __name__ == '__main__':
+    if "repos" not in st.session_state:
+        st.title("Git Global 🌎")
+    show_search_form()
