@@ -97,8 +97,7 @@ def show_searched_repos():
     with st.spinner(f"Fetching READMEs from user {username}..."):
         repo_summaries = GithubClient.get_user_repo_summaries(
             username=username, 
-            user_type=user_type, 
-            link_limit=2, page_limit=1
+            user_type=user_type
         )
     n_repos = len(repo_summaries)
     st.session_state["repos"] = repo_summaries
